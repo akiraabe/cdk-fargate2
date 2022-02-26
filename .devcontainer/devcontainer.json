@@ -1,0 +1,15 @@
+{
+  "name": "Node Docker",
+  "dockerFile": "../Dockerfile",
+  "extensions": [
+    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint",
+    "visualstudioexptteam.vscodeintellic",
+    "zhuangtongfa.material-theme",
+    "esbenp.prettier-vscode",
+    "donjayamanne.githistory",
+    "vscodevim.vim",
+    "amazonwebservices.aws-toolkit-vscode",
+    "hediet.vscode-drawio"
+  ]
+}

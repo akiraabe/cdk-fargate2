@@ -1,0 +1,26 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.autoSave": "afterDelay",
+  "window.zoomLevel": -1,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.fontSize": 14,
+  "editor.suggestSelection": "first",
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "workbench.preferredDarkColorTheme": "Visual Studio Light",
+  "cSpell.words": [
+    "BURSTABLE",
+    "dbname",
+    "elasticloadbalancingv",
+    "Fargate"
+  ]
+}
