@@ -6,4 +6,4 @@ RUN apk --update --no-cache add \
   && apk del tzdata \
   && apk add git
 
-RUN npm install -g aws-cdk@2.12.0
+RUN npm install -g aws-cdk@2.16.0

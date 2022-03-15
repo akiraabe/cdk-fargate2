@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import { Construct } from 'constructs';
-import { DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
+import { DatabaseClusterEngine, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Policy, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
@@ -13,7 +13,7 @@ export class TestCdkStack extends Stack {
 
     // VPC関連のリソース作成
     const vpc: ec2.Vpc = new ec2.Vpc(this, 'AbeTestVpc', {
-      cidr: '10.1.0.0/16',
+      cidr: '10.6.0.0/16',
       subnetConfiguration: [
         // Optional（省略すると、PUBLICとPRIVATE_WITH_NATのみ生成される）
         {
@@ -47,21 +47,31 @@ export class TestCdkStack extends Stack {
     rdsSG.connections.allowFrom(ecsSG, Port.tcp(3306), 'Ingress 3306 from ECS');
 
     // RDS(最低限の設定としてある)
-    const rdsCluster = new DatabaseCluster(this, 'AbeTestRds', {
+    // Serverless Clusterを試してみた。
+    const rdsCluster = new ServerlessCluster(this, 'AbeTestRds', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instanceProps: {
-        vpc,
-        vpcSubnets: {
+      vpc,
+      vpcSubnets: {
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
-        securityGroups: [rdsSG],
-        instanceType: ec2.InstanceType.of(
-          ec2.InstanceClass.BURSTABLE2,
-          ec2.InstanceSize.SMALL
-        ),
-      },
+      securityGroups: [rdsSG],
       defaultDatabaseName: 'abeTest',
     });
+    // const rdsCluster = new DatabaseCluster(this, 'AbeTestRds', {
+    //   engine: DatabaseClusterEngine.AURORA_MYSQL,
+    //   instanceProps: {
+    //     vpc,
+    //     vpcSubnets: {
+    //       subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+    //     },
+    //     securityGroups: [rdsSG],
+    //     instanceType: ec2.InstanceType.of(
+    //       ec2.InstanceClass.BURSTABLE2,
+    //       ec2.InstanceSize.SMALL
+    //     ),
+    //   },
+    //   defaultDatabaseName: 'abeTest',
+    // });
 
     // RDS定義の後に追加
     // SecretsManager(RDSにより自動設定)
@@ -85,7 +95,7 @@ export class TestCdkStack extends Stack {
           listenerPort: 80,
           taskImageOptions: {
             image: ecs.ContainerImage.fromRegistry(
-              'akiraabe/spring-boot-docker'
+              'akiraabe/spring-boot-docker:v0305-2'
             ),
             containerPort: 8080,
             // Secretの設定
@@ -109,7 +119,8 @@ export class TestCdkStack extends Stack {
 
     // HealthCheckの設定
     loadBalancedFargateService.targetGroup.configureHealthCheck({
-      path: '/custom-health-path',
+      // path: '/custom-health-path',
+      path: '/',
       healthyThresholdCount: 2, // Optional
       interval: Duration.seconds(15), // Optional
     });
